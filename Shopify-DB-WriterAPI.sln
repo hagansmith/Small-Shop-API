@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2036
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shopify-DB-WriterAPI", "Shopify-DB-WriterAPI\Shopify-DB-WriterAPI.csproj", "{2F24EB6D-8DD5-4988-9EF7-A0731590EF79}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shopify-DB-WriterAPI.Tests", "Shopify-DB-WriterAPI.Tests\Shopify-DB-WriterAPI.Tests.csproj", "{A630A40D-6497-4580-BA32-BC7F5EB25E9C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2F24EB6D-8DD5-4988-9EF7-A0731590EF79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F24EB6D-8DD5-4988-9EF7-A0731590EF79}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F24EB6D-8DD5-4988-9EF7-A0731590EF79}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F24EB6D-8DD5-4988-9EF7-A0731590EF79}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A630A40D-6497-4580-BA32-BC7F5EB25E9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A630A40D-6497-4580-BA32-BC7F5EB25E9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A630A40D-6497-4580-BA32-BC7F5EB25E9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A630A40D-6497-4580-BA32-BC7F5EB25E9C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5B13384B-20DF-4DA0-B75A-AB1605CA552F}
+	EndGlobalSection
+EndGlobal
