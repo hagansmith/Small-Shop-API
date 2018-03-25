@@ -12,24 +12,12 @@ namespace Shopify_DB_WriterAPI.Controllers
 {
     public class LineItemsController : ApiController
     {
-        //private PostLineItem _postLineItem = null;
-
-        //public LineItemsController()
-        //{
-
-        //}
-
-        //public LineItemsController(PostLineItem postLineItem)
-        //{
-        //    _postLineItem = postLineItem;
-        //}
-
         // GET api/LineItems
-        public List<Models.LineItem> Get()
+        public HttpResponseMessage Get()
         {
             var items = new GetLineItems();
             var results = items.getProducts();
-            return results;
+            return Request.CreateResponse(HttpStatusCode.OK, results);
         }
 
         // GET api/LineItems/5
@@ -39,21 +27,28 @@ namespace Shopify_DB_WriterAPI.Controllers
         }
 
         // POST api/LineItems
-        public IHttpActionResult Post(LineItemDto lineItem)
+        public HttpResponseMessage Post(object order)
         {
-            if (!ModelState.IsValid)
+            //if (!ModelState.IsValid)
+            //{
+            //    return BadRequest(ModelState);
+            //}
+            //var lineItemModel = lineItem.ToModel();
+            var lineItems = new LineItemHelper();
+            var items = lineItems.Parse(order);
+            int postCount = 0;
+
+            foreach (LineItem item in items)
             {
-                return BadRequest(ModelState);
+                var post = new PostLineItem();
+                post.InsertLineItem(item);
+                postCount +=1;
             }
-            var lineItemModel = lineItem.ToModel();
-            var post = new PostLineItem();
-            post.InsertLineItem(lineItemModel);
 
-            lineItem.id = lineItemModel.id;
+            if (items.Count == postCount)
+                return Request.CreateResponse(HttpStatusCode.Created);
 
-            return Created(
-                Url.Link("DefaultApi", new { controller = "LineItems",  lineItem.id }), lineItem
-                );
+            return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Could not process your order, try again later...");
         }
 
         // PUT api/LineItems/5
