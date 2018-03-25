@@ -73,20 +73,20 @@ namespace Shopify_DB_WriterAPI.Models
         [J("customer")] public Customer Customer { get; set; }
     }
 
-    public partial class OrderRoot
-    {
-        public static OrderRoot FromJson(string json) => JsonConvert.DeserializeObject<OrderRoot>(json, Converter.Settings);
-    }
+    //public partial class OrderRoot
+    //{
+    //    public static OrderRoot FromJson(string json) => JsonConvert.DeserializeObject<OrderRoot>(json, Converter.Settings);
+    //}
 
-    internal class Converter
-    {
-        public static readonly JsonSerializerSettings Settings = new JsonSerializerSettings
-        {
-            MetadataPropertyHandling = MetadataPropertyHandling.Ignore,
-            DateParseHandling = DateParseHandling.None,
-            Converters = {
-            new IsoDateTimeConverter { DateTimeStyles = DateTimeStyles.AssumeUniversal }
-            },
-        };
-    }
+    //internal class Converter
+    //{
+    //    public static readonly JsonSerializerSettings Settings = new JsonSerializerSettings
+    //    {
+    //        MetadataPropertyHandling = MetadataPropertyHandling.Ignore,
+    //        DateParseHandling = DateParseHandling.None,
+    //        Converters = {
+    //        new IsoDateTimeConverter { DateTimeStyles = DateTimeStyles.AssumeUniversal }
+    //        },
+    //    };
+    //}
 }

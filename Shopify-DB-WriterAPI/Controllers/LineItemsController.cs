@@ -27,29 +27,28 @@ namespace Shopify_DB_WriterAPI.Controllers
         }
 
         // POST api/LineItems
-        public IHttpActionResult Post(object order)
+        public HttpResponseMessage Post(object order)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            //if (!ModelState.IsValid)
+            //{
+            //    return BadRequest(ModelState);
+            //}
             //var lineItemModel = lineItem.ToModel();
             var lineItems = new LineItemHelper();
             var items = lineItems.Parse(order);
+            int postCount = 0;
 
             foreach (LineItem item in items)
             {
                 var post = new PostLineItem();
                 post.InsertLineItem(item);
-
+                postCount +=1;
             }
 
-            //lineItem.Id = lineItem.Id;
-            //if (items.Count 
-            return Created("", items.Count);
-            //return Created(
-            //    Url.Link("DefaultApi", new { controller = "LineItems",  lineItem.Id }), lineItem
-            //    );
+            if (items.Count == postCount)
+                return Request.CreateResponse(HttpStatusCode.Created);
+
+            return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Could not process your order, try again later...");
         }
 
         // PUT api/LineItems/5

@@ -7,25 +7,22 @@ using System.Web;
 
 namespace Shopify_DB_WriterAPI.LineItems
 {
+    // Take the full info object and parse the line_items object out for use in inventory tracking.
     public class LineItemHelper
     {
         public List<LineItem> Parse(object info)
         {
             JObject parsedObject = JObject.Parse(info.ToString());
             //get line items into list
-            IList<JToken> results = parsedObject["line_items"].Children().ToList();
+            IList<JToken> items = parsedObject["line_items"].Children().ToList();
             //Serialize results into objects
             IList<LineItem> lineItems = new List<LineItem>();
-            foreach (JToken result in results)
+            foreach (JToken item in items)
             {
-                //JToken.ToObject helper method
-                LineItem lineItem = result.ToObject<LineItem>();
+                //ToObject helper method part of newtonsoft JToken
+                LineItem lineItem = item.ToObject<LineItem>();
                 lineItems.Add(lineItem);
             }
-            //Receive JSON and verify signature matches
-            //Parse JSON to models
-            //Verify DATA against DTO
-            //Write data into DB
             return lineItems.ToList();
         }
     }
