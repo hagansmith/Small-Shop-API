@@ -12,24 +12,12 @@ namespace Shopify_DB_WriterAPI.Controllers
 {
     public class LineItemsController : ApiController
     {
-        //private PostLineItem _postLineItem = null;
-
-        //public LineItemsController()
-        //{
-
-        //}
-
-        //public LineItemsController(PostLineItem postLineItem)
-        //{
-        //    _postLineItem = postLineItem;
-        //}
-
         // GET api/LineItems
-        public List<Models.LineItem> Get()
+        public HttpResponseMessage Get()
         {
             var items = new GetLineItems();
             var results = items.getProducts();
-            return results;
+            return Request.CreateResponse(HttpStatusCode.OK, results);
         }
 
         // GET api/LineItems/5
@@ -39,21 +27,29 @@ namespace Shopify_DB_WriterAPI.Controllers
         }
 
         // POST api/LineItems
-        public IHttpActionResult Post(LineItemDto lineItem)
+        public IHttpActionResult Post(object order)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            var lineItemModel = lineItem.ToModel();
-            var post = new PostLineItem();
-            post.InsertLineItem(lineItemModel);
+            //var lineItemModel = lineItem.ToModel();
+            var lineItems = new LineItemHelper();
+            var items = lineItems.Parse(order);
 
-            lineItem.id = lineItemModel.id;
+            foreach (LineItem item in items)
+            {
+                var post = new PostLineItem();
+                post.InsertLineItem(item);
 
-            return Created(
-                Url.Link("DefaultApi", new { controller = "LineItems",  lineItem.id }), lineItem
-                );
+            }
+
+            //lineItem.Id = lineItem.Id;
+            //if (items.Count 
+            return Created("", items.Count);
+            //return Created(
+            //    Url.Link("DefaultApi", new { controller = "LineItems",  lineItem.Id }), lineItem
+            //    );
         }
 
         // PUT api/LineItems/5

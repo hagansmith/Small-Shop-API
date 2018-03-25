@@ -2,25 +2,35 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using J = Newtonsoft.Json.JsonPropertyAttribute;
 
 namespace Shopify_DB_WriterAPI.Models
 {
-    public class LineItem
+    public partial class LineItem
     {
-        public Int64 id { get; set; }
-        public Int64 variant_id { get; set; }
-        public string title { get; set; }
-        public int quantity { get; set; }
-        public double price { get; set; }
-        public string sku { get; set; }
-        public string variant_title { get; set; }
-        public string vendor { get; set; }
-        public string fulfillment_service { get; set; }
-        public Int64 product_id { get; set; }
-        public bool requires_shipping { get; set; }
-        public bool taxable { get; set; }
-        public bool gift_card { get; set; }
-        public string name { get; set; }
-        public bool variant_inventory_management { get; set; }
+        [J("id")] public long Id { get; set; }
+        [J("variant_id")] public string VariantId { get; set; }
+        [J("title")] public string Title { get; set; }
+        [J("quantity")] public int Quantity { get; set; }
+        [J("price")] public string Price { get; set; }
+        [J("sku")] public string Sku { get; set; }
+        [J("variant_title")] public string VariantTitle { get; set; }
+        [J("vendor")] public string Vendor { get; set; }
+        [J("fulfillment_service")] public string FulfillmentService { get; set; }
+        [J("product_id")] public long ProductId { get; set; }
+        [J("requires_shipping")] public bool RequiresShipping { get; set; }
+        [J("taxable")] public bool Taxable { get; set; }
+        [J("gift_card")] public bool GiftCard { get; set; }
+        [J("name")] public string Name { get; set; }
+        [J("variant_inventory_management")] public string VariantInventoryManagement { get; set; }
+        [J("properties")] public List<object> Properties { get; set; }
+        [J("product_exists")] public bool ProductExists { get; set; }
+        [J("fulfillable_quantity")] public int FulfillableQuantity { get; set; }
+        [J("grams")] public long Grams { get; set; }
+        [J("total_discount")] public string TotalDiscount { get; set; }
+        [J("fulfillment_status")] public string FulfillmentStatus { get; set; }
+        [J("tax_lines")] public List<object> TaxLines { get; set; }
     }
 }
