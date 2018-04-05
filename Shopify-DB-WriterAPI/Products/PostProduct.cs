@@ -89,8 +89,8 @@ namespace Shopify_DB_WriterAPI.Products
                                                                     VALUES
                                                                         (@id
                                                                         ,@productId
-                                                                        ,@created
-                                                                        ,@updated
+                                                                        ,@createdAt
+                                                                        ,@updatedAt
                                                                         ,@width
                                                                         ,@height
                                                                         ,@src)", image);
@@ -98,10 +98,33 @@ namespace Shopify_DB_WriterAPI.Products
                 }
                 else return 0;
 
+                var optionLines = 0;
                 if (imageLines == images.Count)
+                {
+                    foreach (ProductOption option in options)
+                    {
+                        optionLines += connection.Execute(@"USE [Small-Shop-Dev]
+                                                           INSERT INTO[dbo].[Option]
+                                                                            ([id]
+                                                                            ,[productId]
+                                                                            ,[name]
+                                                                            ,[position]
+                                                                            ,[values])
+                                                                        VALUES
+                                                                            (<id, bigint,>
+                                                                            ,<productId, bigint,>
+                                                                            ,<name, varchar(100),>
+                                                                            ,<position, int,>
+                                                                            ,<values, nvarchar(50),>)", option);
+                    }
+                }
+                else
+                    return 0;
+
+                if (lines == 1 && variantLines == variants.Count && imageLines == images.Count && optionLines == options.Count)
                     return 1;
 
-                 return 0;
+                return 0;
             }
         }
     }
