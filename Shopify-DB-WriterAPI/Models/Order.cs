@@ -9,7 +9,7 @@ using J = Newtonsoft.Json.JsonPropertyAttribute;
 
 namespace Shopify_DB_WriterAPI.Models
 {
-    public partial class OrderRoot
+    public partial class Order
     {
         [J("id")] public long Id { get; set; }
         [J("email")] public string Email { get; set; }

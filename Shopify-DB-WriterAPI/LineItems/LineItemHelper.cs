@@ -7,7 +7,7 @@ using System.Web;
 
 namespace Shopify_DB_WriterAPI.LineItems
 {
-    // Take the full info object and parse the line_items object out for use in inventory tracking.
+    // Take the full order payload object and parse the line_items object out for use in inventory tracking.
     public class LineItemHelper
     {
         public List<LineItem> Parse(object info)
