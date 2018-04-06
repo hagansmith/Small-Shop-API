@@ -1,4 +1,5 @@
-﻿using Dapper;
+﻿using System;
+using Dapper;
 using Shopify_DB_WriterAPI.Models;
 using System.Configuration;
 using System.Data.SqlClient;
@@ -9,7 +10,7 @@ namespace Shopify_DB_WriterAPI.Products
     {
         readonly string _connectionString = ConfigurationManager.ConnectionStrings["Small_Shop"].ConnectionString;
 
-        public int InsertProduct (Product newProduct)
+        public int InsertProduct(Product newProduct)
         {
             var images = newProduct.Images;
             var options = newProduct.Options;
@@ -17,8 +18,12 @@ namespace Shopify_DB_WriterAPI.Products
             using (var connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
-
-                var lines = connection.Execute(@"USE [Small-Shop-Dev]
+                SqlTransaction transaction = connection.BeginTransaction();
+                using (transaction)
+                {
+                    try
+                    {
+                        var productRowsAffected = connection.Execute(@"USE [Small-Shop-Dev]
                                                             INSERT INTO [dbo].[Product]
                                                                        ([id]
                                                                        ,[title]
@@ -36,13 +41,11 @@ namespace Shopify_DB_WriterAPI.Products
                                                                        ,@createdat
                                                                        ,@updatedat
                                                                        ,@publishedat
-                                                                       ,@image)", newProduct);
-                var variantLines = 0;
-                if (lines == 1)
-                {
-                    foreach (ProductVariant variant in variants)
-                    {
-                        variantLines += connection.Execute(@"USE [Small-Shop-Dev]
+                                                                       ,@image)", newProduct, transaction: transaction);
+
+                        foreach (ProductVariant variant in variants)
+                        {
+                            connection.Execute(@"USE [Small-Shop-Dev]
                                                             INSERT INTO [dbo].[ProductVariant]
                                                                        ([variantId]
                                                                        ,[productId]
@@ -66,18 +69,12 @@ namespace Shopify_DB_WriterAPI.Products
                                                                        ,@imageId
                                                                        ,@inventoryQuantity
                                                                        ,@weight
-                                                                       ,@requiresShipping)", variant);
-                    }
-                }
+                                                                       ,@requiresShipping)", variant, transaction: transaction);
+                        }
 
-                else return 0;
-
-                var imageLines = 0;
-                if (variantLines == variants.Count)
-                {
-                    foreach (ProductImage image in images)
-                    {
-                        imageLines += connection.Execute(@"USE [Small-Shop-Dev]
+                        foreach (ProductImage image in images)
+                        {
+                            connection.Execute(@"USE [Small-Shop-Dev]
                                                             INSERT INTO[dbo].[ProductImage]
                                                                         ([id]
                                                                         ,[productId]
@@ -93,37 +90,42 @@ namespace Shopify_DB_WriterAPI.Products
                                                                         ,@updatedAt
                                                                         ,@width
                                                                         ,@height
-                                                                        ,@src)", image);
-                    }
-                }
-                else return 0;
+                                                                        ,@src)", image, transaction: transaction);
+                        }
 
-                var optionLines = 0;
-                if (imageLines == images.Count)
-                {
-                    foreach (ProductOption option in options)
-                    {
-                        optionLines += connection.Execute(@"USE [Small-Shop-Dev]
+                        foreach (ProductOption option in options)
+                        {
+                            connection.Execute(@"USE [Small-Shop-Dev]
                                                            INSERT INTO[dbo].[Option]
                                                                             ([id]
                                                                             ,[productId]
                                                                             ,[name]
                                                                             ,[position]
-                                                                            ,[values])
+                                                                            )
                                                                         VALUES
-                                                                            (<id, bigint,>
-                                                                            ,<productId, bigint,>
-                                                                            ,<name, varchar(100),>
-                                                                            ,<position, int,>
-                                                                            ,<values, nvarchar(50),>)", option);
+                                                                            (@id
+                                                                            ,@productId
+                                                                            ,@name
+                                                                            ,@position
+                                                                            )", option, transaction: transaction);
+                        }
+                        transaction.Commit();
+                        return productRowsAffected;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                        try
+                        {
+                            transaction.Rollback();
+                            return 0;
+                        }
+                        catch (Exception exRollback)
+                        {
+                            Console.WriteLine(exRollback.Message);
+                        }
                     }
                 }
-                else
-                    return 0;
-
-                if (lines == 1 && variantLines == variants.Count && imageLines == images.Count && optionLines == options.Count)
-                    return 1;
-
                 return 0;
             }
         }

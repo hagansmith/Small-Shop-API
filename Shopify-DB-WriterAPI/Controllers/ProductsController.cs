@@ -47,7 +47,7 @@ namespace Shopify_DB_WriterAPI.Controllers
             if (results == 1)
                 return Request.CreateResponse(HttpStatusCode.Created);
 
-            return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Could not process your order, try again later...");
+            return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "A product with that id already exists");
         }
 
         // PUT api/LineItems/5
