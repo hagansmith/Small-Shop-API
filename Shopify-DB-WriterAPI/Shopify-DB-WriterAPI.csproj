@@ -206,7 +206,7 @@
     <Compile Include="Models\ProductOption.cs" />
     <Compile Include="Models\ProductVariant.cs" />
     <Compile Include="Models\ShippingLine.cs" />
-    <Compile Include="Products\ProductHelper.cs" />
+    <Compile Include="Products\AdjustProductCount.cs" />
     <Compile Include="Products\PostProduct.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

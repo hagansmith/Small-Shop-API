@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using Shopify_DB_WriterAPI.Products;
 
 namespace Shopify_DB_WriterAPI.Controllers
 {
@@ -36,19 +37,20 @@ namespace Shopify_DB_WriterAPI.Controllers
             //var lineItemModel = lineItem.ToModel();
             var lineItems = new LineItemHelper();
             var items = lineItems.Parse(order);
-            int postCount = 0;
+            var postCount = 0;
 
             foreach (LineItem item in items)
             {
                 var post = new PostLineItem();
                 post.InsertLineItem(item);
+
+                var adjustInventory = new AdjustProductCount();
+                adjustInventory.DecrementProductCount(item.VariantId, item.Quantity);
+
                 postCount +=1;
             }
 
-            if (items.Count == postCount)
-                return Request.CreateResponse(HttpStatusCode.Created);
-
-            return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Could not process your order, try again later...");
+            return items.Count == postCount ? Request.CreateResponse(HttpStatusCode.Created) : Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Could not process your order, try again later...");
         }
 
         // PUT api/LineItems/5
