@@ -6,23 +6,35 @@ using Shopify_DB_WriterAPI.Products;
 
 namespace Shopify_DB_WriterAPI.Controllers
 {
+    [RoutePrefix("api/products")]
     public class ProductsController : ApiController
     {
-        //// GET api/LineItems
+        //// GET api/products
+        //[Route, HttpGet]
         //public HttpResponseMessage Get()
         //{
-        //    //var items = new GetLineItems();
-        //    //var results = items.getProducts();
-        //    return Request.CreateResponse(HttpStatusCode.OK);
+        //    var products = new GetProducts();
+        //    var results = products.getProducts();
+        //    return Request.CreateResponse(HttpStatusCode.OK, results);
         //}
 
-        //// GET api/LineItems/5
-        //public string Get(int id)
-        //{
-        //    return id.ToString();
-        //}
+        // GET api/products/variants
+        [Route, HttpGet]
+        public HttpResponseMessage Get()
+        {
+            var repo = new GetProducts();
+            var results = repo.GetLowStock();
+            return Request.CreateResponse(HttpStatusCode.OK, results);
+        }
 
-        // POST api/Product
+        // GET api/products/5
+        public string Get(int id)
+        {
+            return id.ToString();
+        }
+
+        // POST api/products
+        [Route, HttpPost]
         public HttpResponseMessage Post(Product product)
         {
 

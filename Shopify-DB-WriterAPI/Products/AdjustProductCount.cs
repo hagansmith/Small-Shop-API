@@ -22,8 +22,8 @@ namespace Shopify_DB_WriterAPI.Products
                 connection.Open();
                 var lines = connection.Execute(@"UPDATE [dbo].[ProductVariant]
                                                         SET [updated] = GETDATE()
-                                                           ,[inventoryQty] - @quantity
-                                                        WHERE ProductVariant.Id = @variantId", new {variantId, quantity});
+                                                           ,[inventoryQty] -= @quantity
+                                                        WHERE ProductVariant.variantId = @variantId", new {variantId, quantity});
                 return lines;
             }
 

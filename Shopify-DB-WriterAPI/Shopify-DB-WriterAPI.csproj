@@ -191,6 +191,7 @@
     <Compile Include="Controllers\OrdersController.cs" />
     <Compile Include="Controllers\ProductsController.cs" />
     <Compile Include="Dto\LineItemDto.cs" />
+    <Compile Include="Dto\LowInventoryDto.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -207,6 +208,7 @@
     <Compile Include="Models\ProductVariant.cs" />
     <Compile Include="Models\ShippingLine.cs" />
     <Compile Include="Products\AdjustProductCount.cs" />
+    <Compile Include="Products\GetProducts.cs" />
     <Compile Include="Products\PostProduct.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
