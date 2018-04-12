@@ -32,7 +32,7 @@ namespace Shopify_DB_WriterAPI.Products
                                                                        ,[created]
                                                                        ,[updated]
                                                                        ,[published]
-                                                                       ,[imageId])
+                                                                       )
                                                                  VALUES
                                                                        (@id
                                                                        ,@title
@@ -41,7 +41,7 @@ namespace Shopify_DB_WriterAPI.Products
                                                                        ,@createdat
                                                                        ,@updatedat
                                                                        ,@publishedat
-                                                                       ,@image)", newProduct, transaction: transaction);
+                                                                       )", newProduct, transaction: transaction);
 
                         foreach (ProductVariant variant in variants)
                         {

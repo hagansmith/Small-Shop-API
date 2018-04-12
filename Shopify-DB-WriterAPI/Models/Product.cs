@@ -27,7 +27,7 @@ namespace Shopify_DB_WriterAPI.Models
         [J("variants")] public List<ProductVariant> Variants { get; set; }
         [J("options")] public List<ProductOption> Options { get; set; }
         [J("images")] public List<ProductImage> Images { get; set; }
-        [J("image")] public string Image { get; set; }
+        [J("image")] public ProductImage Image { get; set; }
     }
 
     //public partial class Product

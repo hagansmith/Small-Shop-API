@@ -25,9 +25,9 @@ namespace Shopify_DB_WriterAPI.Models
         [J("created_at")] public System.DateTimeOffset CreatedAt { get; set; }
         [J("updated_at")] public System.DateTimeOffset UpdatedAt { get; set; }
         [J("taxable")] public bool Taxable { get; set; }
-        [J("barcode")] public long Barcode { get; set; }
+        [J("barcode")] public string Barcode { get; set; }
         [J("grams")] public long Grams { get; set; }
-        [J("image_id")] public long ImageId { get; set; }
+        [J("image_id")] public string ImageId { get; set; }
         [J("inventory_quantity")] public long InventoryQuantity { get; set; }
         [J("weight")] public long Weight { get; set; }
         [J("weight_unit")] public string WeightUnit { get; set; }

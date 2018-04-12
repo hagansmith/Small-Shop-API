@@ -1,6 +1,12 @@
-﻿using System.Net;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Shopify_DB_WriterAPI.Models;
 using Shopify_DB_WriterAPI.Products;
 
@@ -43,6 +49,27 @@ namespace Shopify_DB_WriterAPI.Controllers
 
             return results == 1 ? Request.CreateResponse(HttpStatusCode.Created) : Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "A product with that id already exists");
         }
+
+        // POST api/products/list
+        [Route("list"), HttpPost]
+        public HttpResponseMessage Post(object products)
+        {
+            var parse = new ProductParser();
+            var prods = parse.Parse(products);
+            var postCount = 0;
+
+            foreach (Product product in prods)
+            {
+                var post = new PostProduct();
+                post.InsertProduct(product);
+                postCount += 1;
+            }
+
+            return prods.Count == postCount ? Request.CreateResponse(HttpStatusCode.Created) : Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Could not process your order, try again later...");
+        }
+
+
+
 
         //// PUT api/LineItems/5
         //public void Put(int id, [FromBody]string value)

@@ -37,7 +37,7 @@ namespace Shopify_DB_WriterAPI.Products
             {
                 db.Open();
                 var products = db.Query<LowInventoryDto>(@"USE [Small-Shop-Dev]
-                                            SELECT p.title, i.src image, v.sku
+                                            SELECT p.title, i.src image, v.sku, v.inventoryQty remaining, v.reorderDate
                                               FROM [dbo].[Product] p
                                               JOIN dbo.ProductVariant v on p.id = v.productId
                                               JOIN dbo.ProductImage i on p.id = i.productId
