@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Web;
 using Newtonsoft.Json;
 using Shopify_DB_WriterAPI.Models;
@@ -14,5 +15,7 @@ namespace Shopify_DB_WriterAPI.Dto
         [JsonProperty("image")] public string Image { get; set; }
         [JsonProperty("remaining")] public string Remaining { get; set; }
         [JsonProperty("reorderDate")] public DateTime ReorderDate { get; set; }
+        [JsonProperty("orderedInventoryQty")] public int OrderedInventoryQty { get; set; }
+
     }
 }

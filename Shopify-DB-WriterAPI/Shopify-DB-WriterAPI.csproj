@@ -209,6 +209,7 @@
     <Compile Include="Models\ShippingLine.cs" />
     <Compile Include="Products\AdjustProductCount.cs" />
     <Compile Include="Products\GetProducts.cs" />
+    <Compile Include="Products\PatchProduct.cs" />
     <Compile Include="Products\PostProduct.cs" />
     <Compile Include="Products\ProductParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

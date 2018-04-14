@@ -4,9 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Sockets;
 using System.Web.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Shopify_DB_WriterAPI.Dto;
 using Shopify_DB_WriterAPI.Models;
 using Shopify_DB_WriterAPI.Products;
 
@@ -68,13 +70,15 @@ namespace Shopify_DB_WriterAPI.Controllers
             return prods.Count == postCount ? Request.CreateResponse(HttpStatusCode.Created) : Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Could not process your order, try again later...");
         }
 
+        // PATCH api/products/sku
+        [Route("{sku}"), HttpPatch]
+        public HttpResponseMessage OnOrderUpdater(LowInventoryDto product)
+        {
+            var patch = new PatchProduct();
+            var results = patch.updateVariant(product);
 
-
-
-        //// PUT api/LineItems/5
-        //public void Put(int id, [FromBody]string value)
-        //{
-        //}
+            return results == 2 ? Request.CreateResponse(HttpStatusCode.Created) : Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Unable to process request");
+        }
 
         //// DELETE api/LineItems/5
         //public void Delete(int id)
