@@ -37,12 +37,29 @@ namespace Shopify_DB_WriterAPI.Products
             {
                 db.Open();
                 var products = db.Query<LowInventoryDto>(@"USE [Small-Shop-Dev]
-                                            SELECT p.title, i.src image, v.sku, v.inventoryQty remaining, v.reorderDate
+                                            SELECT p.title, i.src image, v.sku, v.inventoryQty remaining, v.reorderDate, v.orderedInventoryQty
                                               FROM [dbo].[Product] p
                                               JOIN dbo.ProductVariant v on p.id = v.productId
                                               JOIN dbo.ProductImage i on p.id = i.productId
                                               WHERE v.inventoryQty <= v.minimumStock and v.sku <> ''");
                 return products.ToList();
+            }
+        }
+
+        public LowInventoryDto GetProductById(string id)
+        {
+            using (var db = new SqlConnection(ConfigurationManager.ConnectionStrings["Small_Shop"].ConnectionString))
+            {
+                db.Open();
+                var product = db.QueryFirst<LowInventoryDto>(@"SELECT  [title] 
+                                                                      ,[sku]
+                                                                      ,[imageId]
+                                                                      ,[inventoryQty] 
+                                                                      ,[orderedInventoryQty]
+                                                                      ,[reorderDate]
+                                                                  FROM [dbo].[ProductVariant]
+                                                                  WHERE ProductVariant.sku = @id", new { id });
+                return product;
             }
         }
     }

@@ -11,16 +11,16 @@ namespace Shopify_DB_WriterAPI.Products
 {
     public class PatchProduct
     {
-        public int updateVariant(LowInventoryDto product)
+        public int updateVariant(string sku, int count)
         {
             using (var db = new SqlConnection(ConfigurationManager.ConnectionStrings["Small_Shop"].ConnectionString))
             {
-                product.ReorderDate = DateTime.Now;
+                var reorderDate = DateTime.Now;
                 db.Open();
                 var lines = db.Execute(@"UPDATE [dbo].[ProductVariant]
-                                          SET [orderedInventoryQty] = @orderedInventoryQty
+                                          SET [orderedInventoryQty] += @count
                                              ,[reorderDate] = @reorderDate
-                                          WHERE ProductVariant.sku = @sku", product);
+                                          WHERE ProductVariant.sku = @sku", new {sku, count, reorderDate});
                 return lines;
             }
         }

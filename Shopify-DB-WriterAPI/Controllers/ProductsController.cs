@@ -1,14 +1,6 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
-using System.Net.Sockets;
 using System.Web.Http;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Shopify_DB_WriterAPI.Dto;
 using Shopify_DB_WriterAPI.Models;
 using Shopify_DB_WriterAPI.Products;
 
@@ -36,9 +28,12 @@ namespace Shopify_DB_WriterAPI.Controllers
         }
 
         // GET api/products/5
-        public string Get(int id)
+        [Route("{id}"), HttpGet]
+        public HttpResponseMessage Get(string id)
         {
-            return id.ToString();
+            var repo = new GetProducts();
+            var product = repo.GetProductById(id);
+            return Request.CreateResponse(HttpStatusCode.OK, product);
         }
 
         // POST api/products
@@ -70,14 +65,14 @@ namespace Shopify_DB_WriterAPI.Controllers
             return prods.Count == postCount ? Request.CreateResponse(HttpStatusCode.Created) : Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Could not process your order, try again later...");
         }
 
-        // PATCH api/products/sku
-        [Route("{sku}"), HttpPatch]
-        public HttpResponseMessage OnOrderUpdater(LowInventoryDto product)
+        // PATCH api/products/sku/
+        [Route("{sku}/{count}"), HttpPatch]
+        public HttpResponseMessage OnOrderUpdater(string sku, int count)
         {
             var patch = new PatchProduct();
-            var results = patch.updateVariant(product);
+            var results = patch.updateVariant(sku, count);
 
-            return results == 2 ? Request.CreateResponse(HttpStatusCode.Created) : Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Unable to process request");
+            return results == 1 ? Request.CreateResponse(HttpStatusCode.Created) : Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Unable to process request");
         }
 
         //// DELETE api/LineItems/5
