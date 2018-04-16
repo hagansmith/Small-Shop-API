@@ -1,16 +1,19 @@
 ﻿using System;
-using Dapper;
-using Shopify_DB_WriterAPI.Models;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
+using System.Linq;
+using Dapper;
+using Shopify_DB_WriterAPI.Dto;
+using Shopify_DB_WriterAPI.Models;
 
-namespace Shopify_DB_WriterAPI.Products
+namespace Shopify_DB_WriterAPI.Services
 {
-    public class PostProduct
+    public class ProductsRepository
     {
         readonly string _connectionString = ConfigurationManager.ConnectionStrings["Small_Shop"].ConnectionString;
 
-        public int InsertProduct(Product newProduct)
+        public int Post(Product newProduct)
         {
             var images = newProduct.Images;
             var options = newProduct.Options;
@@ -127,6 +130,103 @@ namespace Shopify_DB_WriterAPI.Products
                     }
                 }
                 return 0;
+            }
+        }
+
+        public List<Product> Get()
+        {
+            using (var db = new SqlConnection(_connectionString))
+            {
+                db.Open();
+                var products = db.Query<Product>(@"USE [Small-Shop-Dev]
+                                        SELECT[id]
+                                            ,[title]
+                                            ,[vendor]
+                                            ,[type]
+                                            ,[created]
+                                            ,[updated]
+                                            ,[published]
+                                            ,[imageId]
+                                        FROM[dbo].[Product]");
+                return products.ToList();
+            }
+        }
+
+        public List<InventoryDto> GetLowStock()
+        {
+            using (var db = new SqlConnection(_connectionString))
+            {
+                db.Open();
+                var products = db.Query<InventoryDto>(@"USE [Small-Shop-Dev]
+                                            SELECT p.title, i.src image, v.sku, v.inventoryQty remaining, v.variantId
+                                              FROM [dbo].[Product] p
+                                              JOIN dbo.ProductVariant v on p.id = v.productId
+                                              JOIN dbo.ProductImage i on p.id = i.productId
+                                              WHERE v.inventoryQty <= v.minimumStock and v.sku <> ''");
+                return products.ToList();
+            }
+        }
+
+        public InventoryDto GetProductById(string id)
+        {
+            using (var db = new SqlConnection(_connectionString))
+            {
+                db.Open();
+                var product = db.QueryFirst<InventoryDto>(@"SELECT  [title] 
+                                                                      ,[sku]
+                                                                      ,[imageId]
+                                                                      ,[inventoryQty]
+                                                                      ,[variantId]
+                                                                  FROM [dbo].[ProductVariant]
+                                                                  WHERE ProductVariant.sku = @id", new { id });
+                return product;
+            }
+        }
+
+        public int DecrementProductCount(string variantId, int quantity)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                var lines = connection.Execute(@"UPDATE [dbo].[ProductVariant]
+                                                        SET [updated] = GETDATE()
+                                                           ,[inventoryQty] -= @quantity
+                                                        WHERE ProductVariant.variantId = @variantId", new {variantId, quantity});
+                return lines;
+            }
+
+        }
+
+        public int CreateReorder(string variantId, int count)
+        {
+            using (var db = new SqlConnection(_connectionString))
+            {
+                var reorderDate = DateTime.Now;
+                db.Open();
+                var lines = db.Execute(@"INSERT INTO [dbo].[Reorder]
+                                                            ([variantId]
+                                                            ,[quantity]
+                                                            ,[orderDate])
+                                                    VALUES
+                                                            (@variantId
+                                                            ,@count
+                                                            ,@reorderDate", new { variantId, count, reorderDate });
+                return lines;
+            }
+        }
+
+        public List<InventoryDto> GetProductsOnReorder()
+        {
+            using (var db = new SqlConnection(_connectionString))
+            {
+                db.Open();
+                var products = db.Query<InventoryDto>(@"USE [Small-Shop-Dev]
+                                                               SELECT p.title, i.src image, v.sku, v.inventoryQty remaining, r.quantity orderedInventoryQty, r.orderDate reorderDate
+                                                               FROM dbo.Reorder r
+                                                               JOIN dbo.ProductVariant v on r.variantId = v.variantId
+											                   Join dbo.Product p on v.productId = p.id
+                                                               JOIN dbo.ProductImage i on p.Id = i.productId");
+                return products.ToList();
             }
         }
     }

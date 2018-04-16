@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Web.Http;
 using Shopify_DB_WriterAPI.Models;
 using Shopify_DB_WriterAPI.Products;
+using Shopify_DB_WriterAPI.Services;
 
 namespace Shopify_DB_WriterAPI.Controllers
 {
@@ -18,21 +19,22 @@ namespace Shopify_DB_WriterAPI.Controllers
         //    return Request.CreateResponse(HttpStatusCode.OK, results);
         //}
 
-        // GET api/products/variants
+        // GET api/products/
         [Route, HttpGet]
         public HttpResponseMessage Get()
         {
-            var repo = new GetProducts();
+            var repo = new ProductsRepository();
             var results = repo.GetLowStock();
             return Request.CreateResponse(HttpStatusCode.OK, results);
         }
 
-        // GET api/products/5
+        // GET api/products/1234567890123
         [Route("{id}"), HttpGet]
         public HttpResponseMessage Get(string id)
         {
-            var repo = new GetProducts();
+            var repo = new ProductsRepository();
             var product = repo.GetProductById(id);
+
             return Request.CreateResponse(HttpStatusCode.OK, product);
         }
 
@@ -40,9 +42,8 @@ namespace Shopify_DB_WriterAPI.Controllers
         [Route, HttpPost]
         public HttpResponseMessage Post(Product product)
         {
-
-            var post = new PostProduct();
-            var results = post.InsertProduct(product);
+            var repo = new ProductsRepository();
+            var results = repo.Post(product);
 
             return results == 1 ? Request.CreateResponse(HttpStatusCode.Created) : Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "A product with that id already exists");
         }
@@ -57,27 +58,12 @@ namespace Shopify_DB_WriterAPI.Controllers
 
             foreach (Product product in prods)
             {
-                var post = new PostProduct();
-                post.InsertProduct(product);
+                var repo = new ProductsRepository();
+                repo.Post(product);
                 postCount += 1;
             }
 
             return prods.Count == postCount ? Request.CreateResponse(HttpStatusCode.Created) : Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Could not process your order, try again later...");
         }
-
-        // PATCH api/products/sku/
-        [Route("{sku}/{count}"), HttpPatch]
-        public HttpResponseMessage OnOrderUpdater(string sku, int count)
-        {
-            var patch = new PatchProduct();
-            var results = patch.updateVariant(sku, count);
-
-            return results == 1 ? Request.CreateResponse(HttpStatusCode.Created) : Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Unable to process request");
-        }
-
-        //// DELETE api/LineItems/5
-        //public void Delete(int id)
-        //{
-        //}
     }
 }

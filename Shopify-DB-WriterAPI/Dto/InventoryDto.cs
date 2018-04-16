@@ -8,8 +8,9 @@ using Shopify_DB_WriterAPI.Models;
 
 namespace Shopify_DB_WriterAPI.Dto
 {
-    public class LowInventoryDto
+    public class InventoryDto
     {
+        [JsonProperty("varaintId")] public string VariantId { get; set; }
         [JsonProperty("sku")] public string Sku { get; set; }
         [JsonProperty("title")] public string Title { get; set; }
         [JsonProperty("image")] public string Image { get; set; }
