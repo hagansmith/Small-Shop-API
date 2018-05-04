@@ -9,7 +9,7 @@ namespace Shopify_DB_WriterAPI.Models
 {
     public partial class ProductVariant
     {
-        [J("id")] public long Id { get; set; }
+        [J("variant_id")] public long VariantId { get; set; }
         [J("product_id")] public long ProductId { get; set; }
         [J("title")] public string Title { get; set; }
         [J("price")] public string Price { get; set; }
@@ -28,7 +28,7 @@ namespace Shopify_DB_WriterAPI.Models
         [J("barcode")] public string Barcode { get; set; }
         [J("grams")] public long Grams { get; set; }
         [J("image_id")] public string ImageId { get; set; }
-        [J("inventory_quantity")] public long InventoryQuantity { get; set; }
+        [J("inventory_quantity")] public long Inventory_Quantity { get; set; }
         [J("weight")] public long Weight { get; set; }
         [J("weight_unit")] public string WeightUnit { get; set; }
         [J("inventory_item_id")] public long InventoryItemId { get; set; }

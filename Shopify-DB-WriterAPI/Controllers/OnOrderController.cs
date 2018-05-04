@@ -1,9 +1,6 @@
-﻿using System.Linq.Expressions;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-using Shopify_DB_WriterAPI.Models;
-using Shopify_DB_WriterAPI.Products;
 using Shopify_DB_WriterAPI.Services;
 
 namespace Shopify_DB_WriterAPI.Controllers
@@ -26,6 +23,14 @@ namespace Shopify_DB_WriterAPI.Controllers
         {
             var repo = new ProductsRepository();
             var results = repo.CreateReorder(sku, count);
+            return results == 1 ? Request.CreateResponse(HttpStatusCode.Created) : Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Unable to process request");
+        }
+
+        [Route("{id}/{count}"), HttpPatch]
+        public HttpResponseMessage RecieveInventory(int id, int count)
+        {
+            var repo = new ProductsRepository();
+            var results = repo.Receive(id, count);
             return results == 1 ? Request.CreateResponse(HttpStatusCode.Created) : Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Unable to process request");
         }
     }

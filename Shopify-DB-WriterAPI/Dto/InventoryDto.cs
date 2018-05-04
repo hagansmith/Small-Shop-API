@@ -10,7 +10,8 @@ namespace Shopify_DB_WriterAPI.Dto
 {
     public class InventoryDto
     {
-        [JsonProperty("varaintId")] public string VariantId { get; set; }
+        [JsonProperty("id")] public int Id { get; set; }
+        [JsonProperty("variantId")] public string VariantId { get; set; }
         [JsonProperty("sku")] public string Sku { get; set; }
         [JsonProperty("title")] public string Title { get; set; }
         [JsonProperty("image")] public string Image { get; set; }

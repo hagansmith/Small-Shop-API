@@ -133,21 +133,29 @@ namespace Shopify_DB_WriterAPI.Services
             }
         }
 
-        public List<Product> Get()
+        public List<ProductVariant> Get()
         {
             using (var db = new SqlConnection(_connectionString))
             {
                 db.Open();
-                var products = db.Query<Product>(@"USE [Small-Shop-Dev]
-                                        SELECT[id]
-                                            ,[title]
-                                            ,[vendor]
-                                            ,[type]
-                                            ,[created]
-                                            ,[updated]
-                                            ,[published]
-                                            ,[imageId]
-                                        FROM[dbo].[Product]");
+                var products = db.Query<ProductVariant>(@"USE [Small-Shop-Dev]
+                                                        SELECT [variantId]
+                                                              ,[productId]
+                                                              ,[price]
+                                                              ,[sku]
+                                                              ,ProductVariant.[created]
+                                                              ,ProductVariant.[updated]
+                                                              ,[imageId]
+                                                              ,[inventory_quantity]
+                                                              ,[weight]
+                                                              ,[requiresShipping]
+                                                              ,[oldInventoryQty]
+                                                              ,[allocatedInventoryQty]
+                                                              ,[minimumStock]
+	                                                          ,Product.title as title
+                                                          FROM [Small-Shop-Dev].[dbo].[ProductVariant]
+                                                          JOIN Product on ProductVariant.productId = Product.id
+                                                          ORDER BY title");
                 return products.ToList();
             }
         }
@@ -158,11 +166,11 @@ namespace Shopify_DB_WriterAPI.Services
             {
                 db.Open();
                 var products = db.Query<InventoryDto>(@"USE [Small-Shop-Dev]
-                                            SELECT p.title, i.src image, v.sku, v.inventoryQty remaining, v.variantId
+                                            SELECT p.title, i.src image, v.sku, v.inventory_quantity remaining, v.variantId
                                               FROM [dbo].[Product] p
                                               JOIN dbo.ProductVariant v on p.id = v.productId
                                               JOIN dbo.ProductImage i on p.id = i.productId
-                                              WHERE v.inventoryQty <= v.minimumStock and v.sku <> ''");
+                                              WHERE v.inventory_quantity <= v.minimumStock and v.sku <> ''");
                 return products.ToList();
             }
         }
@@ -210,7 +218,7 @@ namespace Shopify_DB_WriterAPI.Services
                                                     VALUES
                                                             (@variantId
                                                             ,@count
-                                                            ,@reorderDate", new { variantId, count, reorderDate });
+                                                            ,@reorderDate)", new { variantId, count, reorderDate });
                 return lines;
             }
         }
@@ -221,13 +229,75 @@ namespace Shopify_DB_WriterAPI.Services
             {
                 db.Open();
                 var products = db.Query<InventoryDto>(@"USE [Small-Shop-Dev]
-                                                               SELECT p.title, i.src image, v.sku, v.inventoryQty remaining, r.quantity orderedInventoryQty, r.orderDate reorderDate
-                                                               FROM dbo.Reorder r
-                                                               JOIN dbo.ProductVariant v on r.variantId = v.variantId
-											                   Join dbo.Product p on v.productId = p.id
-                                                               JOIN dbo.ProductImage i on p.Id = i.productId");
+                                                        SELECT p.title, i.src image, v.sku, v.inventory_quantity remaining, v.variantId, r.quantity orderedInventoryQty, r.orderDate reorderDate, r.quantityReceived, r.id
+                                                        FROM dbo.Reorder r
+                                                        JOIN dbo.ProductVariant v on r.variantId = v.variantId
+											            JOIN dbo.Product p on v.productId = p.id
+                                                        JOIN dbo.ProductImage i on p.Id = i.productId
+                                                        WHERE r.quantityReceived < r.quantity OR r.quantityReceived IS NULL");
                 return products.ToList();
             }
+        }
+
+        public int Receive(int id, int count)
+        {
+            using (var db = new SqlConnection(_connectionString))
+            {
+                var date = DateTime.Now;
+                db.Open();
+                var result = db.Execute(@"UPDATE [dbo].[Reorder]
+                                             SET [dateRecieved] = @date
+                                                ,[quantityReceived] = @count
+                                           WHERE Id = @id", new {id, count, date});
+                return result;
+            } 
+        }
+
+        public int Edit(ProductVariant product)
+        {
+            using (var db = new SqlConnection(_connectionString))
+            {
+                db.Open();
+                var result = db.Execute(@"UPDATE [dbo].[ProductVariant]
+                                               SET [title] = @title
+                                                  ,[price] = @price
+                                                  ,[sku] = @sku
+                                                  ,[created] = @created
+                                                  ,[updated] = @updated
+                                                  ,[inventoryQty] = @inventoryQty
+                                                  ,[weight] = @weight
+                                                  ,[minimumStock] = @minimumStock
+                                             WHERE variantId = @variantId", product);
+
+                return result;
+            }
+        }
+
+        public int PatchCount(long id, int count)
+        {
+            using (var db = new SqlConnection(_connectionString))
+            {
+                db.Open();
+                var result = db.Execute(@"UPDATE [dbo].[ProductVariant]
+                                             SET [inventory_quantity] = @count
+                                         WHERE variantId = @id", new {id, count});
+
+                return result;
+            }
+        }
+
+        public int Delete(long id)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                  var productRowsAffected = connection.Execute(@" DELETE FROM[dbo].[Product]
+                                                                        WHERE id = @id", new { id });
+
+                        
+                  return productRowsAffected;
+            }
+            
         }
     }
 }
