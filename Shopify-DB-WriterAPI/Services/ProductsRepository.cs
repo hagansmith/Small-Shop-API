@@ -183,7 +183,7 @@ namespace Shopify_DB_WriterAPI.Services
                 var product = db.QueryFirst<InventoryDto>(@"SELECT  [title] 
                                                                       ,[sku]
                                                                       ,[imageId]
-                                                                      ,[inventoryQty]
+                                                                      ,[inventory_quantity]
                                                                       ,[variantId]
                                                                   FROM [dbo].[ProductVariant]
                                                                   WHERE ProductVariant.sku = @id", new { id });
@@ -198,7 +198,7 @@ namespace Shopify_DB_WriterAPI.Services
                 connection.Open();
                 var lines = connection.Execute(@"UPDATE [dbo].[ProductVariant]
                                                         SET [updated] = GETDATE()
-                                                           ,[inventoryQty] -= @quantity
+                                                           ,[inventory_quantity] -= @quantity
                                                         WHERE ProductVariant.variantId = @variantId", new {variantId, quantity});
                 return lines;
             }

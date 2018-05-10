@@ -15,7 +15,7 @@ namespace Shopify_DB_WriterAPI.Dto
         [JsonProperty("sku")] public string Sku { get; set; }
         [JsonProperty("title")] public string Title { get; set; }
         [JsonProperty("image")] public string Image { get; set; }
-        [JsonProperty("remaining")] public string Remaining { get; set; }
+        [JsonProperty("inventory_quantity")] public string InventoryQuantity { get; set; }
         [JsonProperty("reorderDate")] public DateTime ReorderDate { get; set; }
         [JsonProperty("orderedInventoryQty")] public int OrderedInventoryQty { get; set; }
 
