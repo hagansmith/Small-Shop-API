@@ -76,13 +76,12 @@ namespace Shopify_DB_WriterAPI.Controllers
             return Request.CreateResponse(HttpStatusCode.OK, product);
         }
 
-        // PATCH api/products/{id}/{count}
-        [Route("{id}/{count}"), HttpPatch]
-        public HttpResponseMessage Patch(long id, int count)
+        // PATCH api/products/update
+        [Route("update"), HttpPut]
+        public HttpResponseMessage Patch(ProductVariant details)
         {
             var repo = new ProductsRepository();
-            var update = repo.PatchCount(id, count);
-
+            var update = repo.PatchCount(details);
             return Request.CreateResponse(HttpStatusCode.OK);
         }
 

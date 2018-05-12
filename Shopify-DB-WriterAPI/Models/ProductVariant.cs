@@ -34,5 +34,6 @@ namespace Shopify_DB_WriterAPI.Models
         [J("inventory_item_id")] public long InventoryItemId { get; set; }
         [J("old_inventory_quantity")] public long OldInventoryQuantity { get; set; }
         [J("requires_shipping")] public bool RequiresShipping { get; set; }
+        [J("image")] public string Image { get; set; }
     }
 }

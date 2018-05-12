@@ -140,7 +140,9 @@ namespace Shopify_DB_WriterAPI.Services
                 db.Open();
                 var products = db.Query<ProductVariant>(@"USE [Small-Shop-Dev]
                                                         SELECT [variantId]
-                                                              ,[productId]
+                                                              ,productVariant.[productId]
+                                                              ,productVariant.title as option1
+                                                              ,minimumStock as option2
                                                               ,[price]
                                                               ,[sku]
                                                               ,ProductVariant.[created]
@@ -153,8 +155,10 @@ namespace Shopify_DB_WriterAPI.Services
                                                               ,[allocatedInventoryQty]
                                                               ,[minimumStock]
 	                                                          ,Product.title as title
+                                                              ,i.src as image
                                                           FROM [Small-Shop-Dev].[dbo].[ProductVariant]
                                                           JOIN Product on ProductVariant.productId = Product.id
+                                                          JOIN ProductImage i on product.id = i.productId
                                                           ORDER BY title");
                 return products.ToList();
             }
@@ -166,7 +170,7 @@ namespace Shopify_DB_WriterAPI.Services
             {
                 db.Open();
                 var products = db.Query<InventoryDto>(@"USE [Small-Shop-Dev]
-                                            SELECT p.title, i.src image, v.sku, v.inventory_quantity remaining, v.variantId
+                                            SELECT p.title, i.src image, v.sku, v.inventory_quantity, v.variantId
                                               FROM [dbo].[Product] p
                                               JOIN dbo.ProductVariant v on p.id = v.productId
                                               JOIN dbo.ProductImage i on p.id = i.productId
@@ -273,14 +277,15 @@ namespace Shopify_DB_WriterAPI.Services
             }
         }
 
-        public int PatchCount(long id, int count)
+        public int PatchCount(ProductVariant product)
         {
             using (var db = new SqlConnection(_connectionString))
             {
                 db.Open();
                 var result = db.Execute(@"UPDATE [dbo].[ProductVariant]
-                                             SET [inventory_quantity] = @count
-                                         WHERE variantId = @id", new {id, count});
+                                             SET [inventory_quantity] = @inventory_quantity
+                                                ,[minimumStock] = @option2
+                                         WHERE variantId = @variantId", product);
 
                 return result;
             }
@@ -291,8 +296,8 @@ namespace Shopify_DB_WriterAPI.Services
             using (var connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
-                  var productRowsAffected = connection.Execute(@" DELETE FROM[dbo].[Product]
-                                                                        WHERE id = @id", new { id });
+                  var productRowsAffected = connection.Execute(@" DELETE FROM[dbo].[ProductVariant]
+                                                                        WHERE variantId = @id", new { id });
 
                         
                   return productRowsAffected;
